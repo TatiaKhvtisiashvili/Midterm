@@ -25,6 +25,11 @@ export function toBucketSets(buckets: BucketMap): Array<Set<Flashcard>> {
     return [];
   }
 
+  if (buckets.size < 2 || !buckets.has(0)) {
+    throw new Error("Buckets must include at least bucket 0 and a retired bucket");
+  }
+
+
   let array : Set<Flashcard>[] = [];
   let lastbucket = 0;
 
@@ -90,9 +95,9 @@ export function practice(
   day: number
 ): Set<Flashcard> {
   const practiceCards = new Set<Flashcard>(); // Set to store cards to practice
-
+  const actualDay = day + 1; // day is 0-indexed, but we want to start from 1 for the algorithm 
 for (let bucketIndex = 0; bucketIndex < buckets.length - 1; bucketIndex++) { // -1 because the last bucket is retired and should not be practiced
-    if (buckets[bucketIndex] && day % Math.pow(2, bucketIndex) === 0) { // bucket i should be practiced every 2^i days, so we check if dayNumber is divisible by 2^i
+    if (buckets[bucketIndex] && actualDay % Math.pow(2, bucketIndex) === 0) { // bucket i should be practiced every 2^i days, so we check if dayNumber is divisible by 2^i
       (buckets[bucketIndex] ?? new Set<Flashcard>()).forEach(card => practiceCards.add(card)); // Add cards from the bucket to the practice set
     }
   }
@@ -178,17 +183,26 @@ const retiredBucket = Math.max(...newBuckets.keys());
  * @returns a hint for the front of the flashcard.
  * @spec.requires card is a valid Flashcard.
  */
+
+// export function getHint(card: Flashcard): string {
+//   if (!card.front || card.front.length === 0) {
+//     return "";
+//   }
+
+//   // Show first half (rounded up) of the front text
+//   const hintLength = Math.ceil(card.front.length / 2);
+//   const shown = card.front.substring(0, hintLength);
+//   const hidden = "_".repeat(card.front.length - hintLength);
+
+//   return shown + hidden;
+// }
+
 export function getHint(card: Flashcard): string {
-  if (!card.front || card.front.length === 0) {
+  if(!card.hint || card.hint.length === 0) {
     return "";
   }
 
-  // Show first half (rounded up) of the front text
-  const hintLength = Math.ceil(card.front.length / 2);
-  const shown = card.front.substring(0, hintLength);
-  const hidden = "_".repeat(card.front.length - hintLength);
-
-  return shown + hidden;
+  return card.hint;
 }
 
 /**

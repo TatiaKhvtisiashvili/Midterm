@@ -95,6 +95,8 @@ let currentDay: number = 0;
 
 // Initialize with sample cards in bucket 0 (newest)
 currentBuckets.set(0, new Set(initialCards));
+//I'm adding retired bucket too, since my functions assume it already exists (which it should)
+currentBuckets.set(1, new Set());
 
 // ======================
 // State Accessors & Mutators

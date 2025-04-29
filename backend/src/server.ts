@@ -23,7 +23,7 @@ app.get("/api/practice", (req: Request, res: Response) => {
     const cardsArray = Array.from(practiceCards);
 
     console.log(`Day ${day}: Practice ${cardsArray.length} cards`);
-    res.json({ cards: cardsArray, day });
+    res.json({ cards: cardsArray, day }); // I'm guessing this does an implicit return, never touched express
   } catch (error) {
     console.error("Error getting practice cards:", error);
     res.status(500).json({ message: "Error fetching practice cards" });
