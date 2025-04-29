@@ -1,136 +1,322 @@
-# Specification: Flashcard Application Enhancement Project
+Specification: Full-Stack Flashcard Application (v1.0 - Build Instructions Scope)
 
+Version: 1.0
+Date: [Current Date]
 
-## 1. Project Overview
+1. Overview
 
-This document outlines the enhancement plan for extending our existing flashcard learning application with three key features: file-based persistence, a browser extension for rapid card creation, and gesture recognition for practice sessions. These features will significantly improve usability and provide a more seamless learning experience.
+This document specifies the requirements for building a full-stack flashcard application based on the provided "Full-Stack Flashcard App - Build Instructions". It utilizes an existing flashcard algorithm (algorithm.ts, flashcards.ts), a Node.js/Express backend with in-memory state, and a React/Vite frontend.
 
-## 2. Feature Descriptions
+The core functionality involves:
 
-### 2.1 File-Based Persistence System
+Fetching practice cards due for the current simulated day.
 
-**Purpose:** To maintain application state across server restarts, ensuring users never lose their learning progress or created flashcards.
+Displaying cards one by one (front, then back).
 
-**Requirements:**
-- Create a serialization system to convert in-memory state (Maps/Sets) to JSON-compatible formats
-- Implement read/write operations for a state file (`flashcards-data.json`)
-- Add graceful shutdown listeners to save state before exiting
-- Implement state loading during server initialization
-- Handle various error conditions (corrupted files, permission issues)
+Allowing users to rate their recall difficulty.
 
-**Technical Approach:**
-- Use Node.js fs/promises API for async file operations
-- Implement custom serialization logic for complex data structures
-- Add signal handlers for SIGINT and SIGTERM
-- Create robust error handling with fallback to initial state
+Updating card state based on difficulty using the provided algorithm.
 
-### 2.2 Smart Card Creation Browser Extension
+Providing optional hints.
 
-**Purpose:** To empower users to create flashcards directly from content they're studying online, with AI assistance for generating effective questions.
+Tracking basic progress statistics.
 
-**Requirements:**
-- Create a cross-browser compatible extension (Chrome/Firefox/Edge)
-- Implement text selection capture mechanism
-- Create backend API endpoint for AI-powered question generation
-- Build card review interface within the extension popup
-- Support tagging and hint addition
-- Implement duplicate detection to prevent redundant cards
+Advancing the simulation day.
 
-**Technical Approach:**
-- Use WebExtensions API with Manifest V3
-- Create context menu integration for right-click access
-- Implement backend LLM integration with appropriate prompt engineering
-- Create a clean, intuitive card editing interface
-- Add proper error handling and offline support
+Scope Note: This specification covers only the features detailed within the main build instructions (Phases 1-5). Features like persistence, LLM integration, browser extensions, or hand gestures are considered future enhancements outside this scope.
 
-### 2.3 Gesture-Based Answer Interface
+2. System Baseline and Core Definitions
+2.1. Technology Stack
 
-**Purpose:** To provide a more intuitive and engaging way to interact with flashcards during practice sessions.
+Backend: Node.js, TypeScript, Express
 
-**Requirements:**
-- Implement webcam access with appropriate permission handling
-- Integrate TensorFlow.js for hand pose detection
-- Define and recognize three specific gestures for answer difficulties
-- Create a visual feedback system for gesture recognition
-- Implement a gesture confirmation mechanism (3-second hold)
-- Maintain traditional UI controls as fallback
+Frontend: React, Vite, TypeScript, Axios
 
-**Technical Approach:**
-- Use MediaDevices API for webcam access
-- Implement TensorFlow.js Hand Pose Detection model
-- Create custom gesture recognition logic
-- Design intuitive visual feedback system
-- Implement smooth state transitions between card reviews
+Algorithm: Pre-defined functions in backend/src/logic/algorithm.ts and backend/src/logic/flashcards.ts.
 
-## 3. Data Structures and Interfaces
+2.2. State Management
 
-### 3.1 Enhanced Flashcard Model
+Mechanism: In-memory state managed within the backend process using backend/src/state.ts.
 
-```typescript
-interface Flashcard {
-  front: string;          // Question/prompt
-  back: string;           // Answer/content
-  hint?: string;          // Optional hint text
-  tags?: string[];        // Optional categorization tags
-  createdAt: number;      // Timestamp
-  lastPracticed?: number; // Timestamp of last review
+Persistence: None. State resets on server restart as per the build instructions. Persistence is out of scope for this version.
+
+2.3. Core Data Structures (Backend)
+
+Flashcard: Defined in flashcards.ts. Contains at least front: string and back: string. May contain hint: string. Identification relies on front and back values.
+
+AnswerDifficulty: Enum defined in flashcards.ts (e.g., Wrong, Hard, Easy).
+
+BucketMap: Type Map<number, Set<Flashcard>>. Stores card distribution across learning buckets. Managed in state.ts.
+
+PracticeRecord: Interface { cardFront: string, cardBack: string, timestamp: number, difficulty: AnswerDifficulty, previousBucket: number, newBucket: number }. Managed as an array (practiceHistory) in state.ts.
+
+currentDay: Type number. Represents the simulation day. Managed in state.ts.
+
+2.4. Core API Endpoints (Summary)
+
+The backend exposes the following core endpoints under the /api base path:
+
+GET /practice: Get cards for the current day's practice session.
+
+POST /update: Update a card's bucket based on user-provided difficulty.
+
+GET /hint: Get a hint for a specific card.
+
+GET /progress: Get learning statistics.
+
+POST /day/next: Advance the simulation day.
+
+3. Backend API Endpoint Details
+
+Base URL: /api (e.g., http://localhost:3001/api)
+Middleware: cors(), express.json()
+
+3.1. Standard Error Response Format
+
+For all 4xx (Client Error) and 5xx (Server Error) HTTP responses, the response body must adhere to:
+
+interface ErrorResponse {
+  error: string;   // Machine-readable code (e.g., "CARD_NOT_FOUND")
+  message: string; // User-friendly description
 }
-```
 
-### 3.2 New API Endpoints
+3.2. GET /practice
 
-```
-POST /api/cards/prepare
-  Request: { backText: string }
-  Response: { front: string, back: string } | { status: "duplicate" } | { status: "error", message: string }
+Purpose: Get flashcards due for practice today.
 
-POST /api/cards
-  Request: { front: string, back: string, hint?: string, tags?: string[] }
-  Response: { status: "success", cardId: string } | { status: "error", message: string }
-```
+Request: None.
 
-## 4. User Experience Workflows
+Logic:
 
-### 4.1 Browser Extension Workflow
+Get currentDay, currentBuckets from state.
 
-1. User highlights text on a webpage
-2. User clicks extension icon or right-clicks to access context menu
-3. Extension shows loading indicator and sends text to backend
-4. Backend checks for duplicates and generates a question using LLM
-5. Extension shows form with generated question and original text
-6. User can edit question/answer and add optional tags and hint
-7. User clicks "Save Card" to add to learning system
-8. Extension confirms success or shows appropriate error
+Convert currentBuckets to Array<Set<Flashcard>> (logic.toBucketSets).
 
-### 4.2 Gesture Recognition Workflow
+Call logic.practice to get due cards (Set<Flashcard>).
 
-1. User starts practice session
-2. System requests webcam access if not already granted
-3. User reveals card answer by clicking on card
-4. User clicks "Ready for Gesture" button
-5. User performs gesture corresponding to answer difficulty:
-   - Thumbs Down = Wrong (reset to bucket 0)
-   - Flat Hand = Hard (move back one bucket)
-   - Thumbs Up = Easy (move forward one bucket)
-6. System provides visual feedback during gesture recognition
-7. After holding gesture for 3 seconds, answer is recorded
-8. System advances to next card
-9. User can use traditional button controls if preferred
+Format result as [{ front, back }, ...].
 
-## 5. Implementation Guidelines
+Success Response (200 OK):
 
-- Use TypeScript for type safety and code maintainability
-- Follow modular architecture with clear separation of concerns
-- Implement comprehensive error handling at all levels
-- Add appropriate logging for debugging and monitoring
-- Write unit tests for critical system components
-- Consider performance optimizations for gesture recognition
+interface PracticeSession {
+  day: number;
+  cards: { front: string; back: string; }[];
+}
+IGNORE_WHEN_COPYING_START
+content_copy
+download
+Use code with caution.
+TypeScript
+IGNORE_WHEN_COPYING_END
 
-## 6. Success Criteria
+Errors: 500 Internal Server Error.
 
-- State successfully persists across server restarts (100% reliability)
-- Browser extension works on Chrome, Firefox, and Edge
-- LLM generates relevant questions for highlighted text (>80% quality)
-- Gesture recognition accuracy exceeds 90% under good lighting conditions
-- System handles all edge cases and error conditions gracefully
-- Performance remains smooth during gesture recognition (< 100ms latency)
+3.3. POST /update
+
+Purpose: Update card state based on practice difficulty.
+
+Request Body:
+
+interface UpdateRequest {
+  cardFront: string;
+  cardBack: string;
+  difficulty: AnswerDifficulty;
+}
+IGNORE_WHEN_COPYING_START
+content_copy
+download
+Use code with caution.
+TypeScript
+IGNORE_WHEN_COPYING_END
+
+Logic:
+
+Validate difficulty. Return 400 if invalid (error: "INVALID_DIFFICULTY").
+
+Find card via front/back. Return 404 if not found (error: "CARD_NOT_FOUND").
+
+Get currentBuckets, find previousBucket.
+
+Call logic.update to get newBuckets.
+
+Update state: state.setBuckets(newBuckets).
+
+Find newBucket from updated state.
+
+Create and add PracticeRecord to history (state.addHistoryRecord).
+
+Success Response (200 OK): (Body optional)
+
+{ "success": true, "message": "Card updated successfully" }
+IGNORE_WHEN_COPYING_START
+content_copy
+download
+Use code with caution.
+Json
+IGNORE_WHEN_COPYING_END
+
+Errors: 400 Bad Request, 404 Not Found, 500 Internal Server Error.
+
+3.4. GET /hint
+
+Purpose: Get hint for a specific card.
+
+Request Query Params: cardFront (string, required), cardBack (string, required).
+
+Logic:
+
+Validate query params. Return 400 if missing/invalid (error: "MISSING_QUERY_PARAM").
+
+Find card via front/back. Return 404 if not found (error: "CARD_NOT_FOUND").
+
+Call logic.getHint(card) (returns hint string or "No hint..." message).
+
+Success Response (200 OK):
+
+interface HintResponse {
+  hint: string;
+}
+IGNORE_WHEN_COPYING_START
+content_copy
+download
+Use code with caution.
+TypeScript
+IGNORE_WHEN_COPYING_END
+
+Errors: 400 Bad Request, 404 Not Found, 500 Internal Server Error.
+
+3.5. GET /progress
+
+Purpose: Get learning statistics.
+
+Request: None.
+
+Logic:
+
+Get currentBuckets, practiceHistory from state.
+
+Call logic.computeProgress(currentBuckets, practiceHistory).
+
+Success Response (200 OK):
+
+interface ProgressStats {
+  totalCards: number;
+  cardsPerBucket: { [bucketNumber: number]: number };
+  overallAccuracy: number; // 0.0 to 1.0
+}
+IGNORE_WHEN_COPYING_START
+content_copy
+download
+Use code with caution.
+TypeScript
+IGNORE_WHEN_COPYING_END
+
+Errors: 500 Internal Server Error.
+
+3.6. POST /day/next
+
+Purpose: Advance simulation to the next day.
+
+Request Body: None.
+
+Logic:
+
+Call state.incrementDay().
+
+Get new currentDay from state.
+
+Success Response (200 OK):
+
+interface NextDayResponse {
+  currentDay: number;
+}
+IGNORE_WHEN_COPYING_START
+content_copy
+download
+Use code with caution.
+TypeScript
+IGNORE_WHEN_COPYING_END
+
+Errors: 500 Internal Server Error.
+
+4. Frontend Implementation Details
+4.1. API Service (src/services/api.ts)
+
+Purpose: Encapsulates all backend API calls using Axios.
+
+Exports:
+
+fetchPracticeCards(): Promise<PracticeSession>
+
+submitAnswer(cardFront: string, cardBack: string, difficulty: AnswerDifficulty): Promise<void>
+
+fetchHint(cardFront: string, cardBack: string): Promise<string>
+
+fetchProgress(): Promise<ProgressStats>
+
+advanceDay(): Promise<number>
+
+Configuration: Requires an Axios instance configured with the backend base URL.
+
+4.2. FlashcardDisplay.tsx Component
+
+Purpose: Renders a single flashcard; handles hint display.
+
+Props:
+
+interface FlashcardDisplayProps {
+  card: { front: string; back: string; };
+  showBack: boolean;
+}
+IGNORE_WHEN_COPYING_START
+content_copy
+download
+Use code with caution.
+TypeScript
+IGNORE_WHEN_COPYING_END
+
+Internal State: hint, loadingHint, hintError.
+
+Rendering: Displays front, conditionally back/placeholder, hint button (when !showBack), hint text/error.
+
+Functions: handleGetHint (calls api.fetchHint, manages hint state/loading/error).
+
+4.3. PracticeView.tsx Component
+
+Purpose: Manages the practice session lifecycle and UI.
+
+Internal State: practiceCards, currentCardIndex, showBack, isLoading, error, day, sessionFinished.
+
+Rendering: Handles loading/error states; displays card count/day; renders FlashcardDisplay; conditionally renders "Show Answer" / Difficulty buttons / "Session Complete" + "Next Day" button.
+
+Functions:
+
+loadPracticeCards: Fetches cards using api.fetchPracticeCards, updates state, handles empty/error cases, resets session state.
+
+handleShowBack: Sets showBack = true.
+
+handleAnswer: Calls api.submitAnswer, updates currentCardIndex or sets sessionFinished, resets showBack, handles errors.
+
+handleNextDay: Calls api.advanceDay, then calls loadPracticeCards on success, handles errors.
+
+Lifecycle: Calls loadPracticeCards on mount (useEffect).
+
+4.4. App.tsx / main.tsx
+
+Purpose: Application entry point and root component.
+
+Setup: Standard Vite React TS setup.
+
+App.tsx: Renders main title and <PracticeView />.
+
+5. Testing Considerations (Manual)
+
+While formal tests are not specified in the build instructions, manual testing should verify:
+
+Practice Loop: Cards load correctly (GET /practice), showing answer reveals back, difficulty submission updates card state (POST /update), hints work (GET /hint), session completion message appears, advancing day works (POST /day/next) and loads new cards.
+
+Error Handling: Frontend displays appropriate messages for API errors (e.g., card not found, server error).
+
+State: Backend logs indicate state changes correctly (card movement between buckets, history recording).
+
+Progress: GET /api/progress endpoint returns data in the expected ProgressStats format (verify via direct API call or placeholder UI).

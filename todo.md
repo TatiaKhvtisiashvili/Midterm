@@ -1,139 +1,166 @@
-# Implementation Todo List: Flashcard Application Enhancements
+# TODO Checklist: Full-Stack Flashcard App (v1.0 - Build Instructions Scope)
 
-## Initial Setup
+This checklist follows the iterative steps defined in the implementation plan. Mark items as complete as you finish them.
 
-- [ ] Fork and clone the repository
-- [ ] Install dependencies and verify basic functionality
-- [ ] Create feature branches for each enhancement
-- [ ] Set up testing framework and basic structure
+## Phase 1: Backend Foundation & Setup
 
-## Feature 1: File-Based State Persistence
+- [ ] **Step 1: Project Structure & Dependencies (Prompt 1)**
+    - [ ] Create root `flashcard-app` directory.
+    - [ ] Create `backend` subdirectory and navigate into it.
+    - [ ] Initialize npm project: `npm init -y`.
+    - [ ] Install runtime dependencies: `npm install express cors`.
+    - [ ] Install dev dependencies: `npm install -D typescript @types/node @types/express @types/cors ts-node-dev`.
+    - [ ] Verify `dependencies` and `devDependencies` in `backend/package.json`.
+- [ ] **Step 2: TypeScript Configuration (Prompt 2)**
+    - [ ] Create `backend/tsconfig.json`.
+    - [ ] Populate `tsconfig.json` with the specified configuration (target, module, paths, etc.).
+- [ ] **Step 3: Directories, Initial Files & Scripts (Prompt 3)**
+    - [ ] Create backend source folders: `backend/src/logic`, `backend/src/types`.
+    - [ ] Create initial backend files: `backend/src/server.ts`, `backend/src/state.ts`, `backend/src/types/index.ts`.
+    - [ ] Add `main` property to `backend/package.json` (`dist/server.js`).
+    - [ ] Add `scripts` (`build`, `start`, `dev`) to `backend/package.json`.
+- [ ] **Step 4: Placeholder Algorithm Logic (Prompt 4)**
+    - [ ] Create `backend/src/logic/flashcards.ts`.
+        - [ ] Define and export basic `Flashcard` class (constructor with `front`, `back`, optional `hint`).
+        - [ ] Define and export `AnswerDifficulty` enum (e.g., `Wrong`, `Hard`, `Easy`).
+        - [ ] Define and export `BucketMap` type alias (`Map<number, Set<Flashcard>>`).
+    - [ ] Create `backend/src/logic/algorithm.ts`.
+        - [ ] Define and export placeholder `toBucketSets` function.
+        - [ ] Define and export placeholder `practice` function.
+        - [ ] Define and export placeholder `update` function.
+        - [ ] Define and export placeholder `getHint` function (return default message).
+        - [ ] Define and export placeholder `computeProgress` function (return empty object, type `any` for now).
+- [ ] **Step 5: Shared Backend Types (Prompt 5)**
+    - [ ] Edit `backend/src/types/index.ts`.
+    - [ ] Import core types from `@logic/flashcards`.
+    - [ ] Define and export `PracticeSession` interface.
+    - [ ] Define and export `UpdateRequest` interface.
+    *   [ ] Define and export `HintResponse` interface.
+    *   [ ] Define and export `ProgressStats` interface.
+    *   [ ] Define and export `NextDayResponse` interface.
+    *   [ ] Define and export `PracticeRecord` interface.
+    *   [ ] Define and export `ErrorResponse` interface.
+    - [ ] Re-export imported core types.
+- [ ] **Step 6: In-Memory State Management (Prompt 6)**
+    - [ ] Edit `backend/src/state.ts`.
+    - [ ] Import necessary types.
+    - [ ] Define and initialize `initialCards` array with sample `Flashcard` objects.
+    - [ ] Define and initialize state variables: `currentBuckets`, `practiceHistory`, `currentDay`.
+    - [ ] Implement and export state accessors/mutators: `getBuckets`, `setBuckets`, `getHistory`, `addHistoryRecord`, `getCurrentDay`, `incrementDay`.
+    - [ ] Implement and export helper `findCard(front, back)`.
+    - [ ] Implement and export helper `findCardBucket(card)`.
+    - [ ] Add confirmation `console.log` for initial load.
+- [ ] **Step 7: Basic Express Server Setup (Prompt 7)**
+    - [ ] Edit `backend/src/server.ts`.
+    - [ ] Add imports: `express`, `cors`, state functions, logic functions, types.
+    - [ ] Create Express `app` instance.
+    - [ ] Define `PORT`.
+    - [ ] Apply `cors()` and `express.json()` middleware.
+    - [ ] Add `app.listen` with startup log message.
 
-### Data Serialization Module
+## Phase 2: Backend API Endpoint Implementation
 
-- [ ] Create new module `src/persistence/serializer.ts`
-- [ ] Define interfaces for serialized state
-- [ ] Write function to transform `Map<number, Set<Flashcard>>` to serializable object
-- [ ] Write function to transform serializable object back to Maps and Sets
-- [ ] Handle edge cases (empty Maps/Sets, circular references)
-- [ ] Add unit tests for serialization functions
+- [ ] **Step 8: Implement `POST /api/day/next` (Prompt 8)**
+    - [ ] Add route handler for `POST /api/day/next` in `server.ts`.
+    - [ ] Implement logic: `try/catch`, call `state.incrementDay`, get `newDay`, log, send `NextDayResponse` (200) or `ErrorResponse` (500).
+- [ ] **Step 9: Implement `GET /api/practice` (Prompt 9)**
+    - [ ] Add route handler for `GET /api/practice` in `server.ts`.
+    - [ ] Implement logic: `try/catch`, get state, call `logic.toBucketSets`, `logic.practice`, format result, log, send `PracticeSession` (200) or `ErrorResponse` (500).
+- [ ] **Step 10: Implement `POST /api/update` (Prompt 10)**
+    - [ ] Add route handler for `POST /api/update` in `server.ts`.
+    - [ ] Implement logic: `try/catch`, extract body, validate `difficulty` (400), `state.findCard` (404), get `previousBucket`, call `logic.update`, `state.setBuckets`, get `newBucket`, create/add `PracticeRecord`, log, send success (200) or `ErrorResponse` (400/404/500).
+- [ ] **Step 11: Implement `GET /api/hint` (Prompt 11)**
+    - [ ] Add route handler for `GET /api/hint` in `server.ts`.
+    - [ ] Implement logic: `try/catch`, extract query params, validate params (400), `state.findCard` (404), call `logic.getHint`, log, send `HintResponse` (200) or `ErrorResponse` (400/404/500).
+- [ ] **Step 12: Implement `GET /api/progress` (Prompt 12)**
+    - [ ] **Update `logic/algorithm.ts`:** Modify `computeProgress` signature and implement basic logic to return `ProgressStats` structure (calculate `totalCards`, placeholder `cardsPerBucket`/`overallAccuracy`).
+    - [ ] **Update `server.ts`:** Add route handler for `GET /api/progress`.
+    - [ ] Implement logic: `try/catch`, get state, call `logic.computeProgress`, send `ProgressStats` (200) or `ErrorResponse` (500).
 
-### File Operations
+## Phase 3: Frontend Foundation & Setup
 
-- [ ] Create module `src/persistence/fileOperations.ts`
-- [ ] Implement `saveState(data: SerializedState): Promise<void>` function
-- [ ] Implement `loadState(): Promise<SerializedState | null>` function
-- [ ] Add appropriate error handling for file operations
-- [ ] Create backup mechanism before overwriting existing files
-- [ ] Add logging for persistence operations
-- [ ] Write unit tests with mock filesystem
+- [ ] **Step 13: Project Creation & Dependencies (Prompt 13)**
+    - [ ] Navigate to `flashcard-app` root.
+    - [ ] Create frontend project: `npm create vite@latest frontend -- --template react-ts`.
+    - [ ] Navigate into `frontend`.
+    - [ ] Install Axios: `npm install axios`.
+- [ ] **Step 14: Directories & Initial Files (Prompt 14)**
+    - [ ] Create frontend source folders: `src/components`, `src/services`, `src/types`.
+    - [ ] Create initial frontend files: `components/FlashcardDisplay.tsx`, `components/PracticeView.tsx`, `services/api.ts`, `types/index.ts`.
+- [ ] **Step 15: Shared Frontend Types (Prompt 15)**
+    - [ ] Edit `frontend/src/types/index.ts`.
+    - [ ] Define and export `FlashcardData` interface (`{ front, back }`).
+    - [ ] Define and export `AnswerDifficulty` enum (matching backend).
+    - [ ] Define and export `PracticeSession` interface (matching backend).
+    - [ ] Define and export `ProgressStats` interface (matching backend).
+- [ ] **Step 16: API Service Implementation (Prompt 16)**
+    - [ ] Edit `frontend/src/services/api.ts`.
+    - [ ] Import `axios` and types.
+    - [ ] Define `API_BASE_URL`.
+    - [ ] Create `apiClient` Axios instance.
+    - [ ] Implement and export `fetchPracticeCards` async function.
+    - [ ] Implement and export `submitAnswer` async function.
+    - [ ] Implement and export `fetchHint` async function.
+    - [ ] Implement and export `fetchProgress` async function.
+    - [ ] Implement and export `advanceDay` async function.
+    - [ ] Ensure correct data extraction and error handling strategy (catch in component or log here).
 
-### Server Integration
+## Phase 4: Frontend Component Implementation
 
-- [ ] Create `src/persistence/stateManager.ts` to coordinate persistence
-- [ ] Implement state initialization during server startup
-- [ ] Add signal handlers for graceful shutdown (SIGINT, SIGTERM)
-- [ ] Create shutdown sequence with state saving
-- [ ] Handle race conditions during multiple signals
-- [ ] Test complete persistence cycle (start → modify → shutdown → restart)
+- [ ] **Step 17: `FlashcardDisplay` - Basic Structure (Prompt 17)**
+    - [ ] Edit `frontend/src/components/FlashcardDisplay.tsx`.
+    - [ ] Import `React`, `FlashcardData`.
+    - [ ] Define `FlashcardDisplayProps`.
+    - [ ] Create component structure accepting props.
+    - [ ] Render `card.front`.
+    - [ ] Conditionally render `card.back` or placeholder based on `showBack`.
+    - [ ] Export component.
+- [ ] **Step 18: `FlashcardDisplay` - Hint Feature (Prompt 18)**
+    - [ ] Edit `frontend/src/components/FlashcardDisplay.tsx`.
+    - [ ] Import `useState`, `fetchHint`.
+    - [ ] Add state for `hint`, `loadingHint`, `hintError`.
+    - [ ] Implement `handleGetHint` async function (call `fetchHint`, manage state).
+    - [ ] Conditionally render "Get Hint" button (`!showBack`, connect `onClick`, handle disabled state).
+    - [ ] Render hint text/error message based on state.
+- [ ] **Step 19: `PracticeView` - State & Initial Load (Prompt 19)**
+    - [ ] Edit `frontend/src/components/PracticeView.tsx`.
+    - [ ] Import `React`, hooks, types, services, `FlashcardDisplay`.
+    - [ ] Initialize component state (`practiceCards`, `currentCardIndex`, `showBack`, `isLoading`, `error`, `day`, `sessionFinished`).
+    - [ ] Implement `loadPracticeCards` async function (call `fetchPracticeCards`, update state, handle errors/empty, reset session state).
+    - [ ] Call `loadPracticeCards` on mount using `useEffect`.
+    - [ ] Implement basic conditional rendering (Loading / Error / Active Card Display / Session Finished).
+    - [ ] Export component.
+- [ ] **Step 20: `PracticeView` - Answer Logic (Prompt 20)**
+    - [ ] Edit `frontend/src/components/PracticeView.tsx`.
+    - [ ] Import `submitAnswer`, `AnswerDifficulty`.
+    - [ ] Implement `handleShowBack` function.
+    - [ ] Implement `handleAnswer` async function (call `submitAnswer`, update index/finished, reset `showBack`, handle errors).
+    - [ ] Add "Show Answer" button rendering (`!showBack`, connect `onClick`).
+    - [ ] Add Difficulty buttons rendering (`showBack`, connect `onClick` with correct enum values).
+- [ ] **Step 21: `PracticeView` - Next Day & Polish (Prompt 21)**
+    - [ ] Edit `frontend/src/components/PracticeView.tsx`.
+    - [ ] Import `advanceDay`.
+    - [ ] Implement `handleNextDay` async function (call `advanceDay`, then `loadPracticeCards`, handle errors).
+    - [ ] Add "Go to Next Day" button rendering (`sessionFinished`, connect `onClick`).
+    - [ ] Add Day/Card Count display in active view.
+    - [ ] Ensure buttons are disabled during relevant loading/submitting states.
+- [ ] **Step 22: App Structure (`App.tsx`, `main.tsx`) (Prompt 22)**
+    - [ ] Edit `frontend/src/App.tsx`.
+    - [ ] Import `React`, `PracticeView`.
+    - [ ] Render title and `<PracticeView />`.
+    - [ ] Verify `frontend/src/main.tsx` setup is standard for Vite React TS.
 
-## Feature 2: Browser Extension
+## Phase 5: Integration & Manual Testing
 
-### Extension Scaffolding
-
-- [ ] Create extension directory structure
-- [ ] Write manifest.json with required permissions
-- [ ] Add icons and assets
-- [ ] Create background script with context menu registration
-- [ ] Set up message passing between components
-- [ ] Test basic extension loading
-
-### API Client
-
-- [ ] Create API module in extension
-- [ ] Implement fetch wrapper with error handling
-- [ ] Add functions for preparing cards (`/api/cards/prepare`)
-- [ ] Add functions for saving cards (`/api/cards`)
-- [ ] Test API connectivity and error scenarios
-
-### Backend Endpoints
-
-- [ ] Create `src/services/llmService.ts` for LLM integration
-- [ ] Set up API key handling and configuration
-- [ ] Implement card question generation logic
-- [ ] Add duplicate detection helper in state module
-- [ ] Create `/api/cards/prepare` endpoint
-- [ ] Update `/api/cards` endpoint to handle tags and hints
-- [ ] Add comprehensive tests for both endpoints
-
-### Extension UI
-
-- [ ] Design popup UI for card review
-- [ ] Create loading indicator component
-- [ ] Build card edit form with validation
-- [ ] Implement tag input with auto-complete
-- [ ] Add success/error notification system
-- [ ] Create context menu action handler
-- [ ] Implement text selection capture
-- [ ] Test full extension workflow across browsers
-
-## Feature 3: Gesture Recognition
-
-### Webcam Integration
-
-- [ ] Update frontend to include video element (hidden by default)
-- [ ] Implement webcam permission request
-- [ ] Create error handler for denied permissions
-- [ ] Add webcam feed display component
-- [ ] Implement activation toggle
-- [ ] Test webcam functionality across browsers
-
-### TensorFlow.js Integration
-
-- [ ] Add TensorFlow.js dependencies
-- [ ] Create module for hand pose detection
-- [ ] Implement model loading and initialization
-- [ ] Add performance optimizations (resolution, frame rate)
-- [ ] Create debug visualization for hand tracking
-- [ ] Test model on various devices and browsers
-
-### Gesture Recognition Logic
-
-- [ ] Define landmark patterns for three key gestures
-- [ ] Create gesture detection algorithm
-- [ ] Implement confidence scoring system
-- [ ] Add gesture stability tracking (3-second hold)
-- [ ] Create visual feedback for detected gestures
-- [ ] Implement gesture-to-difficulty mapping
-- [ ] Add reset logic for lost/changed gestures
-- [ ] Test recognition with different users and conditions
-
-### Practice Session Integration
-
-- [ ] Update practice UI with webcam and gesture components
-- [ ] Add "Ready for Gesture" button
-- [ ] Create processing indicator
-- [ ] Implement gesture session state machine
-- [ ] Connect gesture results to answer submission
-- [ ] Maintain compatibility with button controls
-- [ ] Ensure smooth transitions between cards
-- [ ] Test full practice session with gesture input
-
-## Testing & Quality Assurance
-
-- [ ] Write unit tests for serialization module
-- [ ] Create tests for LLM integration
-- [ ] Test browser extension with mocked backends
-- [ ] Perform manual testing of gesture recognition
-- [ ] Conduct cross-browser compatibility testing
-- [ ] Address accessibility considerations
-- [ ] Document known limitations
-
-## Documentation
-
-- [ ] Update README with new features
-- [ ] Create installation guide for browser extension
-- [ ] Document webcam requirements and troubleshooting
-- [ ] Add developer guide for extending the system
-- [ ] Create demo video showcasing all features
-- [ ] Update API documentation
+- [ ] **Step 23: Run Both Servers**
+    - [ ] Start backend: `cd backend && npm run dev`.
+    - [ ] Start frontend: `cd frontend && npm run dev`.
+- [ ] **Step 24: Manual Test Execution**
+    - [ ] Verify initial card load.
+    - [ ] Test "Show Answer" -> Difficulty submission flow.
+    - [ ] Check backend logs for correct processing.
+    - [ ] Test "Get Hint".
+    - [ ] Test completing a session.
+    - [ ] Test "Go to Next Day".
+    - [ ] Test basic error handling visibility (if possible).
+    - [ ] Manually call `GET /api/progress` (e.g., using browser dev tools or `curl`) to verify output format.
