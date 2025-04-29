@@ -1,7 +1,5 @@
 # TODO Checklist: Full-Stack Flashcard App (v1.0 - Build Instructions Scope)
 
-This checklist follows the iterative steps defined in the implementation plan. Mark items as complete as you finish them.
-
 ## Phase 1: Backend Foundation & Setup
 
 - [ ] **Step 1: Project Structure & Dependencies (Prompt 1)**
