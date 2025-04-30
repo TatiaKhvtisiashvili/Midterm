@@ -103,10 +103,9 @@ const PracticeView = () => {
 
     return (
         <div className="practice-container">
-            <Camera onGestureDetected={(difficulty) => {
-                if (showDifficultyButtons) {
-                    handleAnswer(difficulty);
-                }}}/>
+            <Camera onGestureDetected={handleAnswer}
+    shouldProcessGestures={showDifficultyButtons} // Only true when answer is shown
+/>
             <p className="day">day: {day}</p>
 
             {sessionFinished ? (

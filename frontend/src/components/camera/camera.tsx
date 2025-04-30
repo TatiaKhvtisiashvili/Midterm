@@ -1,13 +1,20 @@
 import { useRef, useState, useEffect } from "react";
 import { DrawingUtils, FilesetResolver, GestureRecognizer } from "@mediapipe/tasks-vision";
-import {AnswerDifficulty} from "../../types";
+import { AnswerDifficulty } from "../../types";
 import styles from './camera.module.css';
 
-const Camera = ({ onGestureDetected }: { onGestureDetected?: (gesture: AnswerDifficulty) => void }) => {
+const Camera = ({ 
+  onGestureDetected,
+  shouldProcessGestures 
+}: { 
+  onGestureDetected?: (gesture: AnswerDifficulty) => void;
+  shouldProcessGestures: boolean; // New prop to control when to process gestures
+}) => {
     const videoRef = useRef<HTMLVideoElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const animationFrameRef = useRef<number>(0);
     const showLandmarksRef = useRef(false);
+    const processedCurrentGesture = useRef(false); // Track if we've processed a gesture for current question
 
     const [recognizer, setRecognizer] = useState<GestureRecognizer>();
     const [webcamRunning, setWebcamRunning] = useState(false);
@@ -20,8 +27,8 @@ const Camera = ({ onGestureDetected }: { onGestureDetected?: (gesture: AnswerDif
     useEffect(() => {
       showLandmarksRef.current = showLandmarks;
     }, [showLandmarks]);
-   
-    // Initialize recognizer (only once)
+
+    // Initialize recognizer
     useEffect(() => {
         const initializeRecognizer = async () => {
             try {
@@ -65,6 +72,12 @@ const Camera = ({ onGestureDetected }: { onGestureDetected?: (gesture: AnswerDif
             stopWebcam();
         }
     }, [cameraActive]);
+
+    // Reset gesture processing when shouldProcessGestures changes
+    useEffect(() => {
+        processedCurrentGesture.current = false;
+        setLastGesture(null);
+    }, [shouldProcessGestures]);
 
     const startWebcam = async () => {
         if (!recognizer || webcamRunning) return;
@@ -150,8 +163,8 @@ const Camera = ({ onGestureDetected }: { onGestureDetected?: (gesture: AnswerDif
 
             canvasCtx.restore();
 
-            // Check for gestures and map to difficulty levels
-             if (results.gestures.length > 0) {
+            // Check for gestures
+            if (results.gestures.length > 0) {
                 const bestGesture = results.gestures[0][0];
                 if (bestGesture.score > 0.7) {
                     const detectedGesture = bestGesture.categoryName.toLowerCase();
@@ -161,18 +174,22 @@ const Camera = ({ onGestureDetected }: { onGestureDetected?: (gesture: AnswerDif
                     // Map gestures to difficulty levels
                     if (detectedGesture.includes('thumb_up')) {
                         gestureDisplay = '👍 Easy';
-                        difficulty = 2; // AnswerDifficulty.Easy
+                        difficulty = 2;
                     } else if (detectedGesture.includes('thumb_down')) {
                         gestureDisplay = '👎 Wrong';
-                        difficulty = 0; // AnswerDifficulty.Wrong
+                        difficulty = 0;
                     } else if (detectedGesture.includes('palm') || detectedGesture.includes('open')) {
                         gestureDisplay = '✋ Hard';
-                        difficulty = 1; // AnswerDifficulty.Hard
+                        difficulty = 1;
                     }
                     
+                    // Only update display if we detect a valid gesture
                     if (difficulty !== null) {
                         setLastGesture(gestureDisplay);
-                        if (onGestureDetected) {
+                        
+                        // Only trigger callback if we should process gestures and haven't already for this question
+                        if (shouldProcessGestures && !processedCurrentGesture.current && onGestureDetected) {
+                            processedCurrentGesture.current = true;
                             onGestureDetected(difficulty);
                         }
                     }
@@ -245,13 +262,12 @@ const Camera = ({ onGestureDetected }: { onGestureDetected?: (gesture: AnswerDif
                 
                 <div className={styles.gestureFeedback}>
                     {lastGesture ? (
-                        <>Last detected: <strong>{lastGesture}</strong></>
+                        <>Detected: <strong>{lastGesture}</strong></>
                     ) : (
                         "No gesture detected"
                     )}
                 </div>
-
-                 </div>
+            </div>
         </div>
     );
 };
