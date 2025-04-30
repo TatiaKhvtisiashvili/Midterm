@@ -84,12 +84,11 @@ function getBucketRange(buckets) {
  * @spec.requires buckets is a valid Array-of-Set representation of flashcard buckets.
  */
 function practice(buckets, day) {
-    var _a;
     const practiceCards = new Set(); // Set to store cards to practice
     const actualDay = day + 1; // day is 0-indexed, but we want to start from 1 for the algorithm 
     for (let bucketIndex = 0; bucketIndex < buckets.length - 1; bucketIndex++) { // -1 because the last bucket is retired and should not be practiced
         if (buckets[bucketIndex] && actualDay % Math.pow(2, bucketIndex) === 0) { // bucket i should be practiced every 2^i days, so we check if dayNumber is divisible by 2^i
-            ((_a = buckets[bucketIndex]) !== null && _a !== void 0 ? _a : new Set()).forEach(card => practiceCards.add(card)); // Add cards from the bucket to the practice set
+            (buckets[bucketIndex]).forEach(card => practiceCards.add(card)); // Add cards from the bucket to the practice set
         }
     }
     return practiceCards;

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Flashcard, AnswerDifficulty } from "../types";
 import { fetchPracticeCards, submitAnswer, advanceDay } from "../services/api";
 import FlashcardDisplay from "./FlashcardDisplay";
+import Camera from "./camera/camera";
 
 const PracticeView = () => {
     const [practiceCards, setPracticeCards] = useState<Flashcard[]>([]);
@@ -92,6 +93,7 @@ const PracticeView = () => {
 
     return (
         <div className="practice-container">
+            <Camera/>
             <p className="day">day: {day}</p>
 
             {sessionFinished ? (
