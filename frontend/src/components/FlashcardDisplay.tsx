@@ -41,9 +41,9 @@ const FlashcardDisplay: React.FC<FlashcardDisplayProps> = ({
 
   return <div>
     
-    <h1 className="flashcard">
+    <p className="flashcard">
     {showBack ? card.back : card.front}
-    </h1>
+    </p>
 
     <h2>
   

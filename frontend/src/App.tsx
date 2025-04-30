@@ -8,7 +8,7 @@ function App() {
   return (
     <>
       <div className="container">
-      <h1>Flashcard Learner</h1>
+      <p className='flashcardlearner'>Flashcard Learner</p>
       <PracticeView/>
       </div>
     </>

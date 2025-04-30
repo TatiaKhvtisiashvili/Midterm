@@ -6,7 +6,11 @@
     font-family: cursive;
     color:  #006e65;
   }
-  
+  .flashcardlearner{
+    font-family: cursive;
+    font-size: 50px;
+    font-weight: 600;
+  }
   .container {
     background-color: #defdfb;
     border-radius: 12px;
@@ -96,5 +100,5 @@
   }
   .cardnum{
     font-size: 30px;
-    font-weight: 700;
+    font-weight: 600;
   }
