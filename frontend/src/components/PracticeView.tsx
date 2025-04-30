@@ -15,6 +15,7 @@ const PracticeView = () => {
     const [showAnswerButton, setShowAnswerButton] = useState<boolean>(true);
     const [showDifficultyButtons, setShowDifficultyButtons] = useState<boolean>(false);
     const [processingGesture, setProcessingGesture] = useState(false);
+    const [forceCameraReset, setForceCameraReset] = useState(0);
 
     useEffect(() => {
         loadPracticeCards();
@@ -51,12 +52,14 @@ const PracticeView = () => {
     }
     const [showHint, setShowHint] = useState<boolean>(true);
 
-    function handleShowBack() {
+    const handleShowBack = () => {
     setShowBack(true);
     setShowAnswerButton(false);
     setShowDifficultyButtons(true);
     setShowHint(false);
-}
+    // Force camera reset
+    setForceCameraReset(prev => prev + 1);
+};
 
     const handleAnswer = async (difficulty: AnswerDifficulty) => {
         if (processingGesture) return;
@@ -103,8 +106,10 @@ const PracticeView = () => {
 
     return (
         <div className="practice-container">
-            <Camera onGestureDetected={handleAnswer}
-    shouldProcessGestures={showDifficultyButtons} // Only true when answer is shown
+           <Camera 
+    key={`camera-${forceCameraReset}`}
+    onGestureDetected={handleAnswer}
+    shouldProcessGestures={showDifficultyButtons}
 />
             <p className="day">day: {day}</p>
 

@@ -189,9 +189,13 @@ const Camera = ({
                         
                         // Only trigger callback if we should process gestures and haven't already for this question
                         if (shouldProcessGestures && !processedCurrentGesture.current && onGestureDetected) {
-                            processedCurrentGesture.current = true;
-                            onGestureDetected(difficulty);
-                        }
+    processedCurrentGesture.current = true;
+    onGestureDetected(difficulty);
+    // Reset immediately after processing
+    setTimeout(() => {
+        processedCurrentGesture.current = false;
+    }, 100);
+}
                     }
                 }
             }
