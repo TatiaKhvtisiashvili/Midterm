@@ -3,166 +3,98 @@
     margin: 0 auto;
     padding: 2rem;
     text-align: center;
-    font-family: "Inter", "Segoe UI", Roboto, sans-serif;
-    color: #3f2f28;
+    font-family: cursive;
+    color:  #006e65;
   }
   
-  .logo {
-    height: 6em;
-    padding: 1.5em;
-    will-change: filter;
-    transition: filter 300ms;
-  }
-  .logo:hover {
-    filter: drop-shadow(0 0 2em #646cffaa);
-  }
-  .logo.react:hover {
-    filter: drop-shadow(0 0 2em #61dafbaa);
-  }
-  
-  @keyframes logo-spin {
-    from {
-      transform: rotate(0deg);
-    }
-    to {
-      transform: rotate(360deg);
-    }
-  }
-  
-  @media (prefers-reduced-motion: no-preference) {
-    a:nth-of-type(2) .logo {
-      animation: logo-spin infinite 20s linear;
-    }
-  }
-  
-  .card {
-    padding: 2em;
-  }
-  
-  .read-the-docs {
-    color: #888;
-  }
-  
-  /* New styles for Flashcard app */
   .container {
-    background-color: #f8ffd7;
+    background-color: #defdfb;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    padding: 30px;
+    padding-left: 30px;
+    padding-right: 30px;
+    padding-top: 20px;
+    padding-bottom: 20px;
     max-width: 800px;
     margin: 0 auto;
   }
-  
-  .app-title {
-    color: #4361ee;
-    margin-bottom: 30px;
-    font-weight: 700;
-  }
-  
-  .practice-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .day-counter {
-    background-color: #4361ee;
-    color: white;
-    font-weight: 600;
-    padding: 8px 16px;
-    border-radius: 20px;
-    display: inline-block;
-    margin-bottom: 20px;
-  }
-  
-  .card-counter {
-    color: #555;
-    font-size: 0.9rem;
-    margin-bottom: 20px;
-  }
-  
-  .flashcard {
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    padding: 30px;
-    width: 100%;
-    min-height: 200px;
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.2rem;
-    transition: transform 0.3s ease;
-  }
-  
-  .flashcard:hover {
-    transform: translateY(-5px);
-  }
-  
-  .flashcard-back {
-    background-color: #e9f5ff;
-  }
-  
-  .btn {
+/* buttons */
+  .easy{
     padding: 10px 20px;
-    border: none;
     border-radius: 6px;
-    font-size: 1rem;
+    font-size: 15px;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
     margin: 5px;
-  }
-  
-  .btn:hover {
-    transform: translateY(-2px);
-  }
-  
-  .btn-primary {
-    background-color: #4361ee;
+    background-color: rgb(51, 255, 0);
     color: white;
   }
-  
-  .btn-primary:hover {
-    background-color: #3a56d4;
-  }
-  
-  .btn-wrong {
-    background-color: #ef476f;
-    color: white;
-  }
-  
-  .btn-hard {
-    background-color: #ffd166;
-    color: #333;
-  }
-  
-  .btn-easy {
-    background-color: #06d6a0;
-    color: white;
-  }
-  
-  .difficulty-text {
-    margin: 15px 0;
+
+  .hard{
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 15px;
     font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin: 5px;
+    background-color: rgb(255, 102, 0);
+    color: white;
+  }
+
+  .wrong{
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin: 5px;
+    background-color: red;
+    color: white;
+  }
+  .wrong:hover{
+    transform: translateY(-2px);
+    background-color: rgb(161, 0, 0);
+  }
+  .hard:hover {
+    transform: translateY(-2px);
+    background-color: rgb(173, 71, 2);
+
+  }
+  .easy:hover{
+    transform: translateY(-2px);
+    background-color: rgb(35, 172, 1);
+  }
+
+  .nextday{
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin: 5px;
+    background-color: #006e65;
+    color: white;
+  }
+
+  .showanswer{
+    background-color: #006e65;
+    color: white;
+    margin-bottom: 20px;
+  }
+
+  .difficulty-prompt{
+    font-size: 30px;
   }
   
-  .session-finished {
-    text-align: center;
-    padding: 40px 0;
+  .day{
+    font-size: 25px;
+    font-weight: 600;
   }
-  
-  .error-message {
-    color: #ef476f;
-    padding: 20px;
-    border: 1px solid #ef476f;
-    border-radius: 8px;
-    background-color: #ffedf2;
-  }
-  
-  .loading {
-    color: #4361ee;
-    font-size: 1.2rem;
-    margin: 40px 0;
+  .cardnum{
+    font-size: 30px;
+    font-weight: 700;
   }

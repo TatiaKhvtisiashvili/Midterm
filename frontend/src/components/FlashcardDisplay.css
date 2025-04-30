@@ -1,0 +1,14 @@
+.get_hint{
+    background-color: #006e65;
+    color: white;
+  }
+  .flashcard{
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.267);
+    padding: 30px;
+    margin: 0 auto;
+    margin-bottom: 50px;
+    padding-bottom: 70px;
+    padding-top: 70px;
+    font-size: 35px;
+    width: 400px;
+  }

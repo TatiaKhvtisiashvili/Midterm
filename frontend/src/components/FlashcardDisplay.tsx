@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from "react";
 import { useState } from "react";
 import { Flashcard } from "../types";
 import { fetchHint } from "../services/api";
+import "./FlashcardDisplay.css";
 
 interface FlashcardDisplayProps {
   card: Flashcard;
@@ -40,7 +41,7 @@ const FlashcardDisplay: React.FC<FlashcardDisplayProps> = ({
 
   return <div>
     
-    <h1>
+    <h1 className="flashcard">
     {showBack ? card.back : card.front}
     </h1>
 
@@ -48,7 +49,7 @@ const FlashcardDisplay: React.FC<FlashcardDisplayProps> = ({
   
     </h2>
 
-  { !showBack && <button ref={hintButton} onClick={handleGetHint}>Get Hint</button> }
+  { !showBack && <button className="get_hint" ref={hintButton} onClick={handleGetHint}>Get Hint</button> }
   <h3>{ hintError === "" ?  hint : hintError}</h3>
 
   
