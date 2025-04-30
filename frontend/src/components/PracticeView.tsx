@@ -27,7 +27,7 @@ const [sessionFinished, setSessionFinished] = useState<boolean>(false);
 
     useEffect(() => {
         loadPracticeCards();
-    },[])
+    },[day])
 
 async function loadPracticeCards() {
     try {
@@ -37,7 +37,7 @@ async function loadPracticeCards() {
   
       const response = await fetchPracticeCards();
       setPracticeCards(response.cards);
-      setDay(response.day);
+      setDay(response.day + 1);
       if (response.cards.length === 0) {
         setSessionFinished(true);
       }
@@ -77,6 +77,7 @@ async function loadPracticeCards() {
       try {
         await advanceDay();             // Move to the next day
         await loadPracticeCards();      // Fetch cards for the new day
+        setCurrentCardIndex(0);
       } catch (error) {
         setError("Error advancing to the next day. Please try again.");
         throw error;
@@ -102,12 +103,13 @@ async function loadPracticeCards() {
     <button onClick={handleShowBack}>Show Answer</button>
 
     <div>
+        <button onClick={() => handleAnswer(0) }>wrong</button>
         <button onClick={() => handleAnswer(2) }>easy</button>
         <button onClick={() => handleAnswer(1)} >hard</button>
     </div>
 
     <h1>day: {day}</h1>
-    <h1>card number:{currentCardIndex} of {practiceCards.length}</h1>
+    <h1>card number:{currentCardIndex + 1} of {practiceCards.length}</h1>
     </div>
   );
 };

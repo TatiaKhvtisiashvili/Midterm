@@ -98,7 +98,7 @@ export function practice(
   const actualDay = day + 1; // day is 0-indexed, but we want to start from 1 for the algorithm 
 for (let bucketIndex = 0; bucketIndex < buckets.length - 1; bucketIndex++) { // -1 because the last bucket is retired and should not be practiced
     if (buckets[bucketIndex] && actualDay % Math.pow(2, bucketIndex) === 0) { // bucket i should be practiced every 2^i days, so we check if dayNumber is divisible by 2^i
-      (buckets[bucketIndex] ?? new Set<Flashcard>()).forEach(card => practiceCards.add(card)); // Add cards from the bucket to the practice set
+      (buckets[bucketIndex]).forEach(card => practiceCards.add(card)); // Add cards from the bucket to the practice set
     }
   }
 

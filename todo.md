@@ -19,7 +19,7 @@
     - [ ] Add `scripts` (`build`, `start`, `dev`) to `backend/package.json`.
 - [ ] **Step 4: Placeholder Algorithm Logic (Prompt 4)**
     - [ ] Create `backend/src/logic/flashcards.ts`.
-        - [ ] Define and export basic `Flashcard` class (constructor with `front`, `back`, optional `hint`, optional `tags: string[]`). <-- **UPDATED**
+        - [ ] Define and export basic `Flashcard` class (constructor with `front`, `back`, optional `hint`, optional `tags: string[]`). 
         - [ ] Define and export `AnswerDifficulty` enum (e.g., `Wrong`, `Hard`, `Easy`).
         - [ ] Define and export `BucketMap` type alias (`Map<number, Set<Flashcard>>`).
     - [ ] Create `backend/src/logic/algorithm.ts`.

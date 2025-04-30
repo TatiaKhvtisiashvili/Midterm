@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { useState } from "react";
 import { Flashcard } from "../types";
 import { fetchHint } from "../services/api";
@@ -18,6 +18,10 @@ const FlashcardDisplay: React.FC<FlashcardDisplayProps> = ({
   const hintButton = useRef<HTMLButtonElement | null>(null);
 
 
+  useEffect(() => {
+    setHint("");
+  }, [card])
+
   async function handleGetHint() {
     setLoadingHint(true);
     const hint =  await fetchHint(card);
@@ -30,9 +34,9 @@ const FlashcardDisplay: React.FC<FlashcardDisplayProps> = ({
     setLoadingHint(false)  
   } 
 
-if(loadingHint) {
-    hintButton.current?.setAttribute("disabled", "true");
-}
+// if(loadingHint) {
+//     hintButton.current?.setAttribute("disabled", "true");
+// }
 
   return <div>
     
