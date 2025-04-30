@@ -10,6 +10,7 @@
 }
 
 .cameraContainer {
+  background-color: #defdfb;
   position: relative;
   width: 300px;
   height: 200px;
@@ -54,20 +55,23 @@
 .controls {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 10px;
   align-items: center;
 }
 
 .landmarkButton {
-  padding: 8px 16px;
-  background: #4CAF50;
+  padding: 0.5rem 1rem;
+  background: #006e65;
   color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  width: 100%;
+  max-width: 170px;
 }
 
 .gestureFeedback {
+  margin-top: 10px;
   padding: 8px 16px;
   background: #f0f0f0;
   border-radius: 4px;
@@ -86,16 +90,17 @@
 
 .toggleButton {
   padding: 0.5rem 1rem;
-  background: #4CAF50;
+  background: #006e65;
   color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  margin-right: 1rem;
+  width: 100%;
+  max-width: 170px;
 }
 
 .toggleButtonActive {
-  background: #f44336;
+  background: #af190e;
 }
 
 .toggleButton:disabled {
