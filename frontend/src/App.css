@@ -9,7 +9,7 @@
   .flashcardlearner{
     font-family: cursive;
     font-size: 50px;
-    font-weight: 600;
+    font-weight: 500;
   }
   .container {
     background-color: #defdfb;
@@ -17,10 +17,10 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     padding-left: 30px;
     padding-right: 30px;
-    padding-top: 20px;
+    padding-top: 15px;
     padding-bottom: 20px;
     max-width: 800px;
-    margin: 0 auto;
+ 
   }
 /* buttons */
   .easy{
@@ -95,10 +95,12 @@
   }
   
   .day{
+    padding-top: 25px;
+    padding-bottom: 25px;
     font-size: 25px;
     font-weight: 600;
   }
   .cardnum{
     font-size: 30px;
-    font-weight: 600;
+    font-weight: 500;
   }
