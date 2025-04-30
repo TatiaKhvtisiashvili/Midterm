@@ -14,6 +14,7 @@ const PracticeView = () => {
     const [sessionFinished, setSessionFinished] = useState<boolean>(false);
     const [showAnswerButton, setShowAnswerButton] = useState<boolean>(true);
     const [showDifficultyButtons, setShowDifficultyButtons] = useState<boolean>(false);
+    const [processingGesture, setProcessingGesture] = useState(false);
 
     useEffect(() => {
         loadPracticeCards();
@@ -54,7 +55,10 @@ const PracticeView = () => {
         setShowDifficultyButtons(true); // Show difficulty buttons when answer is shown
     }
 
-    async function handleAnswer(difficulty: AnswerDifficulty) {
+    const handleAnswer = async (difficulty: AnswerDifficulty) => {
+        if (processingGesture) return;
+        
+        setProcessingGesture(true);
         const currentCard = practiceCards[currentCardIndex];
 
         try {
@@ -67,11 +71,14 @@ const PracticeView = () => {
             }
 
             setShowBack(false);
+            setShowDifficultyButtons(false);
         } catch (error) {
             setError("Error submitting answer. Please try again.");
-            throw error;
+            console.error(error);
+        } finally {
+            setProcessingGesture(false);
         }
-    }
+    };
 
     async function handleNextDay() {
         try {
@@ -93,7 +100,10 @@ const PracticeView = () => {
 
     return (
         <div className="practice-container">
-            <Camera/>
+            <Camera onGestureDetected={(difficulty) => {
+                if (showDifficultyButtons) {
+                    handleAnswer(difficulty);
+                }}}/>
             <p className="day">day: {day}</p>
 
             {sessionFinished ? (
