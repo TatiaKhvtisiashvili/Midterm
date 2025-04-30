@@ -7,11 +7,13 @@ import "./FlashcardDisplay.css";
 interface FlashcardDisplayProps {
   card: Flashcard;
   showBack: boolean;
+  showHint: boolean; 
 }
 
 const FlashcardDisplay: React.FC<FlashcardDisplayProps> = ({
   card,
   showBack,
+  showHint, 
 }) => {
   const [hint, setHint] = useState<string>("");
   const [loadingHint, setLoadingHint] = useState<boolean>(false);
@@ -49,8 +51,17 @@ const FlashcardDisplay: React.FC<FlashcardDisplayProps> = ({
   
     </h2>
 
-  { !showBack && <button className="get_hint" ref={hintButton} onClick={handleGetHint}>Get Hint</button> }
-  <h3>{ hintError === "" ?  hint : hintError}</h3>
+    { !showBack && showHint && ( 
+    <button className="get_hint" ref={hintButton} onClick={handleGetHint}>
+    {loadingHint ? "Loading..." : "Get Hint"}
+    </button>
+  )}  
+  { hint && !showBack && showHint && ( 
+    <h3>{hint}</h3>
+  )}
+  { hintError && !showBack && showHint && ( 
+    <h3>{hintError}</h3>
+  )}
 
   
   

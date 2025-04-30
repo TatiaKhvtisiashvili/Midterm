@@ -2,6 +2,10 @@
     background-color: #006e65;
     color: white;
   }
+  .get_hint:hover{
+    transform: translateY(-2px);
+    background-color: #004e48;
+  }
   .flashcard{
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.267);
     margin: 0 auto;

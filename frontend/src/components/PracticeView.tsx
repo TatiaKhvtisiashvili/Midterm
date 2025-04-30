@@ -21,11 +21,12 @@ const PracticeView = () => {
     }, [day]);
 
     useEffect(() => {
-        // Reset buttons when card changes
-        setShowAnswerButton(true);
-        setShowDifficultyButtons(false);
-        setShowBack(false);
-    }, [currentCardIndex]);
+      setShowAnswerButton(true);
+      setShowDifficultyButtons(false);
+      setShowBack(false);
+      setShowHint(true); // Add this line to show hint for new card
+  }, [currentCardIndex]);
+  
 
     async function loadPracticeCards() {
         try {
@@ -48,12 +49,14 @@ const PracticeView = () => {
             setIsLoading(false);
         }
     }
+    const [showHint, setShowHint] = useState<boolean>(true);
 
     function handleShowBack() {
-        setShowBack(true);
-        setShowAnswerButton(false);
-        setShowDifficultyButtons(true); // Show difficulty buttons when answer is shown
-    }
+    setShowBack(true);
+    setShowAnswerButton(false);
+    setShowDifficultyButtons(true);
+    setShowHint(false);
+}
 
     const handleAnswer = async (difficulty: AnswerDifficulty) => {
         if (processingGesture) return;
@@ -108,11 +111,15 @@ const PracticeView = () => {
 
             {sessionFinished ? (
                 <div>
-                    <h1>Session Complete</h1>
+                    <p className="session">Session Complete</p>
                     <button className="nextday" onClick={handleNextDay}>Go to Next Day</button>
                 </div>
             ) : (
-                <FlashcardDisplay card={practiceCards[currentCardIndex]} showBack={showBack} />
+              <FlashcardDisplay 
+              card={practiceCards[currentCardIndex]} 
+              showBack={showBack}
+              showHint={showHint} 
+           />
             )}
 
             {showAnswerButton && !showBack && !sessionFinished && (
