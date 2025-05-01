@@ -193,3 +193,6 @@ app.listen(PORT, () => {
   console.log("- POST /api/day/next");
   console.log("- POST /api/cards");
 });
+
+// Export the Express app
+export { app };

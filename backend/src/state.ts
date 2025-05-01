@@ -198,6 +198,19 @@ export function findCardBucket(cardToFind: Flashcard): number | undefined {
     return undefined;
 }
 
+export function resetState(): void {
+    currentBuckets = new Map<number, Set<Flashcard>>();
+    practiceHistory = [];
+    currentDay = 0;
+    
+    // Initialize with required buckets
+    currentBuckets.set(0, new Set()); // New cards
+    currentBuckets.set(1, new Set()); // Learning bucket
+    currentBuckets.set(2, new Set()); // Retirement bucket
+    
+    console.log("State reset complete");
+}
+
 // Initialization Logging
 
 console.log("Flashcard State Module Initialized:");

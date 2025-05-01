@@ -6,7 +6,9 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
-    "test": "mocha -r ts-node/register src/tests/forAlgorithms.ts"
+    "test": "mocha -r ts-node/register src/tests/*.test.ts",  
+  "test:algorithm": "mocha -r ts-node/register src/tests/algorithm.test.ts",
+  "test:api": "mocha -r ts-node/register src/tests/api.test.ts"
   },
   "keywords": [],
   "author": "",
