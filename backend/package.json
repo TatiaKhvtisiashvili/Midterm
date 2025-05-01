@@ -1,13 +1,13 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "main": "dist/server.js", 
+  "main": "dist/server.js",
   "scripts": {
-    "build": "tsc",                                            
-    "start": "node dist/server.js",                            
-    "dev": "ts-node-dev --respawn --transpile-only src/server.ts" 
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "test": "mocha -r ts-node/register src/tests/forAlgorithms.ts"
   },
-
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -19,7 +19,7 @@
   "devDependencies": {
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.1",
-    "@types/node": "^22.15.2",
+    "@types/node": "^22.15.3",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.8.3"
   }
